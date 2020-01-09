@@ -29,7 +29,7 @@ repositories {
         url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
     }
     maven {
-        url 'http://repo.mvdw-software.com/content/repositories/mvdw-software/'
+        url 'http://repo.mvdw-software.be/content/groups/public/'
     }
     maven {
         url 'https://www.myget.org/F/prosavage/maven/'

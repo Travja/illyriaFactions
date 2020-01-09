@@ -479,6 +479,7 @@ public class FactionsPlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player this_ = event.getPlayer();
         FPlayer me = FPlayers.getInstance().getByPlayer(this_);
+        lastFact.remove(me);
 
         // Make sure player's power is up to date when they log off.
         me.getPower();
@@ -613,6 +614,7 @@ public class FactionsPlayerListener implements Listener {
         }, 5L, 10L);
     }
 
+    private HashMap<FPlayer, Faction> lastFact = new HashMap<FPlayer, Faction>();
     public void refreshPosition(Player player, Location oldLocation, Location newLocation) {
         FPlayer me = FPlayers.getInstance().getByPlayer(player);
 
@@ -641,13 +643,17 @@ public class FactionsPlayerListener implements Listener {
         me.setLastStoodAt(to);
 
         // Did we change "host"(faction)?
+        Faction lastFaction = lastFact.get(me);
         Faction factionFrom = Board.getInstance().getFactionAt(from);
+        factionFrom = (lastFaction == factionFrom) ? factionFrom : lastFaction;
         Faction factionTo = Board.getInstance().getFactionAt(to);
 
+        lastFact.put(me, factionTo);
         boolean changedFaction = (factionFrom != factionTo);
 
+        Faction fFaction = factionFrom;
         if (changedFaction) {
-            Bukkit.getScheduler().runTask(SavageFactions.plugin, () -> Bukkit.getServer().getPluginManager().callEvent(new FPlayerEnteredFactionEvent(factionTo, factionFrom, me)));
+            Bukkit.getScheduler().runTask(SavageFactions.plugin, () -> Bukkit.getServer().getPluginManager().callEvent(new FPlayerEnteredFactionEvent(factionTo, fFaction, me)));
             if (SavageFactions.plugin.getConfig().getBoolean("Title.Show-Title")) {
                 String title = SavageFactions.plugin.getConfig().getString("Title.Format.Title");
                 title = title.replace("{Faction}", factionTo.getColorTo(me) + factionTo.getTag());
